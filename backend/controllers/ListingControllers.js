@@ -1,4 +1,4 @@
-const { TryCatch } = require("../middlewares/error");
+import { TryCatch } from "../middlewares/error.js";
 
 // Listings Controllers
 const getUserListings = TryCatch(async (req, res, next) => {

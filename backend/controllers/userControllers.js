@@ -1,11 +1,55 @@
 // userController.js
-import { TryCatch } from "../middlewares/error";
-import ErrorHandler from "../utils/errorHandler";
+
+import { giveCurrentDateTime } from "../lib/db.js";
+import { TryCatch } from "../middlewares/error.js";
+import { User } from "../models/user.js";
+import ErrorHandler from "../utils/errorHandler.js";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { sendToken } from "../utils/features.js";
 
 // Authentication Controllers
 const registerUser = TryCatch(async (req, res, next) => {
-  if (!user) return next(new ErrorHandler(404, "User not found"));
-  res.status(201).json({ message: "User registered successfully" });
+  const { name, email, password, role } = req.body;
+  const profilePicture = req.file;
+
+  if (!profilePicture)
+    return next(new ErrorHandler(400, "Profile picture is required"));
+
+  const dateTime = giveCurrentDateTime();
+
+  const storage = getStorage();
+
+  const storageRef = ref(
+    storage,
+    `files/${profilePicture.originalname}_${dateTime}`
+  );
+
+  const metadata = {
+    contentType: req.file.mimetype,
+  };
+
+  const snapshot = await uploadBytesResumable(
+    storageRef,
+    req.file.buffer,
+    metadata
+  );
+
+  const downloadURL = await getDownloadURL(snapshot.ref);
+  console.log("File successfully uploaded.");
+
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    role,
+    profilePicture: downloadURL,
+  });
+  sendToken(res, newUser, 201, "User registered successfully");
 });
 
 const loginUser = TryCatch(async (req, res, next) => {

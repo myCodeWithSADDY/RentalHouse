@@ -11,9 +11,10 @@ import {
   resetPassword,
 } from "../controllers/userControllers.js";
 import {
-  addFavorite,
   createListing,
   deleteListing,
+  getUserListings,
+  updateListing,
 } from "../controllers/ListingControllers.js";
 import {
   addFavorite,
@@ -28,10 +29,12 @@ import {
   markNotificationRead,
 } from "../controllers/Notifications.js";
 import { protect } from "../middlewares/authMiddleware.js";
+import { upload } from "../utils/firebaseStorage.js";
+
 // Authentication Routes
-router.post("/auth/register", registerUser);
-router.post("/auth/login", loginUser);
-router.get("/auth/me", protect, getMe);
+router.post("/register", upload.single("filename"), registerUser);
+router.post("/login", loginUser);
+router.get("/me", protect, getMe);
 
 // User Profile Routes
 router.put("/:id", protect, updateUser);
@@ -72,4 +75,4 @@ router.post("/kyc/verify", protect, (req, res) => {
   res.send("Admin Approves/Rejects KYC");
 });
 
-module.exports = router;
+export default router;

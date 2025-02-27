@@ -1,4 +1,4 @@
-const { TryCatch } = require("../middlewares/error");
+import { TryCatch } from "../middlewares/error.js";
 
 // Favorites Controllers
 const addFavorite = TryCatch(async (req, res, next) => {

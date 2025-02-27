@@ -1,4 +1,4 @@
-import { TryCatch } from "../middlewares/error";
+import { TryCatch } from "../middlewares/error.js";
 
 // Notifications Controllers
 const getNotifications = TryCatch(async (req, res, next) => {

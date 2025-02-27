@@ -5,7 +5,7 @@ import { errorMiddleware } from "./middlewares/error.js";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
-import userRoute from "./routes/user.js";
+import userRoute from "./routes/UserRoute.js";
 
 dotenv.config({ path: "./.env" });
 
