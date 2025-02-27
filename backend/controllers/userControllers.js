@@ -1,16 +1,11 @@
 // userController.js
 
-import { giveCurrentDateTime } from "../lib/db.js";
 import { TryCatch } from "../middlewares/error.js";
 import { User } from "../models/user.js";
 import ErrorHandler from "../utils/errorHandler.js";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+
 import { sendToken } from "../utils/features.js";
+import { uploadFilesToCloudinary } from "../lib/helpers.js";
 
 // Authentication Controllers
 const registerUser = TryCatch(async (req, res, next) => {
@@ -20,34 +15,18 @@ const registerUser = TryCatch(async (req, res, next) => {
   if (!profilePicture)
     return next(new ErrorHandler(400, "Profile picture is required"));
 
-  const dateTime = giveCurrentDateTime();
-
-  const storage = getStorage();
-
-  const storageRef = ref(
-    storage,
-    `files/${profilePicture.originalname}_${dateTime}`
-  );
-
-  const metadata = {
-    contentType: req.file.mimetype,
+  const result = await uploadFilesToCloudinary([profilePicture]);
+  const avatar = {
+    public_id: result[0].public_id,
+    url: result[0].url,
   };
-
-  const snapshot = await uploadBytesResumable(
-    storageRef,
-    req.file.buffer,
-    metadata
-  );
-
-  const downloadURL = await getDownloadURL(snapshot.ref);
-  console.log("File successfully uploaded.");
 
   const newUser = await User.create({
     name,
     email,
     password,
     role,
-    profilePicture: downloadURL,
+    profilePicture: avatar,
   });
   sendToken(res, newUser, 201, "User registered successfully");
 });

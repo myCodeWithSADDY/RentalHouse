@@ -6,6 +6,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import { connectDB } from "./lib/db.js";
 import userRoute from "./routes/UserRoute.js";
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config({ path: "./.env" });
 
@@ -15,6 +16,11 @@ const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017";
 
 connectDB(mongoURI);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const app = express();
 

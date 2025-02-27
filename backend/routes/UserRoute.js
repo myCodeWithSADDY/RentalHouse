@@ -29,10 +29,10 @@ import {
   markNotificationRead,
 } from "../controllers/Notifications.js";
 import { protect } from "../middlewares/authMiddleware.js";
-import { upload } from "../utils/firebaseStorage.js";
+import { singlePhoto } from "../utils/multer.js";
 
 // Authentication Routes
-router.post("/register", upload.single("filename"), registerUser);
+router.post("/register", singlePhoto, registerUser);
 router.post("/login", loginUser);
 router.get("/me", protect, getMe);
 
