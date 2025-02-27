@@ -1,0 +1,63 @@
+
+# User Controller Explanation
+
+This document explains the functionality of the user controller file, which handles all the core business logic for the house rental platform.
+
+## Authentication Controllers
+- **registerUser**: Registers a new user in the system.
+- **loginUser**: Logs in an existing user and provides an authentication token.
+- **getMe**: Retrieves the authenticated user's profile information.
+- **updateUser**: Updates the user's profile information.
+- **deleteUser**: Deletes the user account.
+- **forgotPassword**: Sends a password reset link to the user's email.
+- **resetPassword**: Resets the user's password after verifying the reset token.
+
+## Listings Controllers
+- **getUserListings**: Retrieves all listings created by the user.
+- **createListing**: Creates a new property listing.
+- **updateListing**: Updates an existing property listing.
+- **deleteListing**: Deletes a property listing.
+
+## Favorites Controllers
+- **addFavorite**: Adds a listing to the user's favorite list.
+- **getFavorites**: Retrieves all listings marked as favorites by the user.
+- **removeFavorite**: Removes a listing from the user's favorite list.
+
+## Reviews Controllers
+- **addReview**: Allows users to add a review for a property.
+- **getUserReviews**: Retrieves all reviews added by the user.
+- **deleteReview**: Deletes a user's review.
+
+## Notifications Controllers
+- **getNotifications**: Retrieves notifications for the user.
+- **markNotificationRead**: Marks a notification as read.
+
+## KYC Verification Controllers
+- **uploadKYC**: Uploads KYC documents for user verification.
+- **getKYCStatus**: Retrieves the current status of KYC verification.
+- **verifyKYC**: Verifies KYC documents by admin.
+
+### Notes
+- All controllers use `TryCatch` to handle operations and errors.
+- Each controller sends JSON responses with appropriate HTTP status codes.
+- The system is designed to be easily extendable and scalable.
+
+
+## !important:
+- how to use TryCatch in your controllers:
+  use TryCatch before initializing your controllers.
+  such as: 
+
+const controller = TryCatch(async (req, res, next) => {})
+
+## errorHandling middleware:
+- if you want to send Error in your response simply just call out the error like this: 
+
+ if (!user) return next(new ErrorHandler(404, "User not found"));
+
+
+ # no need to use try{}.catch block everytime
+ # check the file in utils to know how ErrorHandler function is working.
+ # check the file in middleware to know how TryCatch middleware is working.
+
+If any changes are required, please contact the tech lead.

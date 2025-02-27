@@ -1,0 +1,6 @@
+# Environment configuration
+**/.env
+node_modules
+
+# VS Code Configuration
+**/.vscode/
