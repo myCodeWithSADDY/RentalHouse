@@ -9,5 +9,5 @@ const NotificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Notification = mongoose.model("Notification", NotificationSchema);
-export default Notification;
+export const Notification = mongoose.model("Notification", NotificationSchema);
+

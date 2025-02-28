@@ -10,5 +10,5 @@ const KYCSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const KYC = mongoose.model("KYC", KYCSchema);
-export default KYC;
+export const KYC = mongoose.model("KYC", KYCSchema);
+
