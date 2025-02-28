@@ -1,6 +1,15 @@
 
 import { envMode } from "../app.js";
   
+
+export const TryCatch = (passedFunc) => async (req, res, next) => {
+ try {
+    await passedFunc(req, res, next);
+ } catch (error) {
+    next(error);
+   }
+};
+  
 export const errorMiddleware = (
   err,
   req,
@@ -24,14 +33,5 @@ export const errorMiddleware = (
   return res.status(err.statusCode).json(response);
   
 };
-  
-export const TryCatch = (passedFunc) => async (req, res, next) => {
- try {
-    await passedFunc(req, res, next);
- } catch (error) {
-    next(error);
-   }
-};
-  
   
   

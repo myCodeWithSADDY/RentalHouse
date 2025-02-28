@@ -1,4 +1,4 @@
-import { TryCatch } from "./error.js";
+import { TryCatch  , errorMiddleware } from "./error.js";
 import jwt from "jsonwebtoken";
 
 export const protect = TryCatch(async (req, res, next) => {
