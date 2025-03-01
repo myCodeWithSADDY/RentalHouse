@@ -9,33 +9,51 @@ import { uploadFilesToCloudinary } from "../lib/helpers.js";
 
 // Register User
 const registerUser = TryCatch(async (req, res, next) => {
-  const { name, email, password ,role } = req.body;
+  const { name, email, password, role } = req.body;
   const profilePicture = req.file;
-  if (!name || !email || !password) return next(new ErrorHandler(400, "All fields are required"));
+
+  if (!name || !email || !password) {
+    return next(new ErrorHandler(400, "All fields are required"));
+  }
 
   let user = await User.findOne({ email });
-  if (user) return next(new ErrorHandler(400, "User already exists"));
+  if (user) {
+    return next(new ErrorHandler(400, "User already exists"));
+  }
 
-  if (!profilePicture)
-    return next(new ErrorHandler(400, "Profile picture is required"));
+  let avatar = null;
 
-  const result = await uploadFilesToCloudinary([profilePicture]);
-  const avatar = {
-    public_id: result[0].public_id,
-    url: result[0].url,
-  };
-  user = await User.create({ name, email, password ,role ,profilePicture: avatar,});
+  // Upload image only if provided
+  if (profilePicture) {
+    const result = await uploadFilesToCloudinary([profilePicture]);
+    avatar = {
+      public_id: result[0].public_id,
+      url: result[0].url,
+    };
+  }
+
+  user = await User.create({
+    name,
+    email,
+    password,
+    role,
+    profilePicture: avatar, 
+  });
+
   const token = user.getJWT();
-  
+
   res.status(201).json({ success: true, token, user });
 });
 
 // Login User
 const loginUser = TryCatch(async (req, res, next) => {
   const { email, password } = req.body;
+
   if (!email || !password) return next(new ErrorHandler(400, "Please enter email & password"));
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
+  console.log("Stored Hashed Password:", user.password); 
+  
   if (!user) return next(new ErrorHandler(404, "Invalid email or password"));
 
   const isMatch = await user.matchPassword(password);

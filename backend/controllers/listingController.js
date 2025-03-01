@@ -1,6 +1,7 @@
 import {Listing} from "../models/listing.js";
 import { TryCatch } from "../middlewares/error.js";
 import { uploadFilesToCloudinary } from "../lib/helpers.js";
+import ErrorHandler from "../utils/errorHandler.js";
 
 // Get Listings for a Specific User
 const getUserListings = TryCatch(async (req, res, next) => {
@@ -23,9 +24,14 @@ const getUserListings = TryCatch(async (req, res, next) => {
 
 // Create a New Listing
 const createListing = TryCatch(async (req, res, next) => { 
+
+  if (!req.user) {
+    return next(new ErrorHandler(401, "Unauthorized: Please login to create a listing"));
+  }
+
   const { title, description, price, location } = req.body;
   const images = req.files; 
-
+  
   if (!title || !description || !price || !location) {
     return next(new ErrorHandler(400, "All fields are required"));
   }
@@ -47,7 +53,7 @@ const createListing = TryCatch(async (req, res, next) => {
     price,
     location,
     images: imageArray,
-    owner: req.user.id, 
+    owner: req.user.id, // Owner is the logged-in user
   });
 
   res.status(201).json({ success: true, listing: newListing });

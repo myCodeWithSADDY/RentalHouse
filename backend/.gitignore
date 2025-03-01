@@ -10,3 +10,4 @@
 # VS Code Configuration
 **/.vscode/
 node_modules/
+.env

@@ -5,7 +5,7 @@ import { protect } from "../middlewares/auth.js"; // Assuming authentication mid
 const router = express.Router();
 
 router.get("/", protect, getUserListings); // Get user listings
-router.post("/", protect, createListing); // Create listing
+router.post("/create", protect, createListing); // Create listing
 router.put("/:id", protect, updateListing); // Update listing
 router.delete("/:id", protect, deleteListing); // Delete listing
 
