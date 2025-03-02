@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/", protect, getFavorites);
 router.post("/", protect, addFavorite);
-router.delete("/:listingId", protect, removeFavorite);
+router.delete("/favorite/:listingId", protect, removeFavorite);
 
 export default router;

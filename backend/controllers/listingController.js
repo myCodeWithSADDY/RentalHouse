@@ -21,8 +21,45 @@ const getUserListings = TryCatch(async (req, res, next) => {
   res.status(200).json({ success: true, page, listings });
 });
 
+const createListing = TryCatch(async (req, res, next) => { 
+  console.log("🔹 Received Headers:", req.headers);
+  console.log("🔹 Received Request Body:", req.body);
+  console.log("🔹 Received Files:", req.file || req.files);
+
+  if (!req.user) {
+    return next(new ErrorHandler(401, "Unauthorized: Please login to create a listing"));
+  }
+
+  const { title, description, price, location } = req.body;
+  const image = req.file; // Get uploaded image
+
+  if (!title || !description || !price || !location) {
+    return next(new ErrorHandler(400, "All fields are required"));
+  }
+
+  if (!image) {
+    return next(new ErrorHandler(400, "At least one image is required"));
+  }
+
+  // Upload file to Cloudinary (ensure your function works)
+  const uploadedImage = await uploadFilesToCloudinary(image);
+
+  const newListing = await Listing.create({
+    title,
+    description,
+    price,
+    location,
+    images: [{ public_id: uploadedImage.public_id, url: uploadedImage.url }],
+    owner: req.user.id,
+  });
+
+  res.status(201).json({ success: true, listing: newListing });
+});
+
+
 
 // Create a New Listing
+/*
 const createListing = TryCatch(async (req, res, next) => { 
 
   if (!req.user) {
@@ -58,7 +95,7 @@ const createListing = TryCatch(async (req, res, next) => {
 
   res.status(201).json({ success: true, listing: newListing });
 });
-
+*/
 // Update an Existing Listing
 const updateListing = TryCatch(async (req, res, next) => {
   const { id } = req.params;

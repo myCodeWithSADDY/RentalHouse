@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import cloudinary from "cloudinary";
 import { connectDB } from "./lib/db.js";
 import { errorMiddleware } from "./middlewares/error.js";
+import bodyParser from "body-parser";
+
 
 // Load environment variables
 dotenv.config({ path: "./.env" });
@@ -35,6 +37,8 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json()); // Additional body parser for JSON
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // CORS Configuration
 const corsOptions = {

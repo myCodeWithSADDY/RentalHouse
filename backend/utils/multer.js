@@ -1,11 +1,13 @@
 import multer from "multer";
 
+const storage = multer.memoryStorage(); // Store files in memory before uploading
+
 const multerUpload = multer({
-  limits: {
-    fileSize: 1024 * 1024 * 50, // 10MB
-  },
+  storage, // Use memory storage
+  limits: { fileSize: 1024 * 1024 * 50 }, // Limit file size to 50MB
 });
 
-const singlePhoto = multerUpload.single("profilePicture");
-const attachmentsMulter = multerUpload.array("files", 5);
-export { singlePhoto, attachmentsMulter };
+const uploadSingle = multerUpload.single("images"); // Ensure "images" matches the form-data key in Postman
+const uploadMultiple = multerUpload.array("images", 5); // Allows multiple images
+
+export { uploadSingle, uploadMultiple };
