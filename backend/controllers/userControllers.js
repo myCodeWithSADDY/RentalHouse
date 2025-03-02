@@ -3,7 +3,9 @@ import {User} from "../models/user.js";
 import { TryCatch , errorMiddleware} from "../middlewares/error.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 import { uploadFilesToCloudinary } from "../lib/helpers.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 
 
@@ -88,41 +90,50 @@ const forgotPassword = TryCatch(async (req, res, next) => {
 
   if (!user) return next(new ErrorHandler(404, "User not found"));
 
-  const resetToken = crypto.randomBytes(20).toString("hex");
-  user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
-  await user.save();
+  const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
 
-  const resetUrl = `${req.protocol}://${req.get("host")}/api/auth/reset/${resetToken}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
   try {
     await sendEmail({
       email: user.email,
       subject: "Password Reset Request",
-      message: `Click the link to reset your password: ${resetUrl}`,
+      message: `Click the link below to reset your password (valid for 15 minutes): \n\n${resetUrl}`,
     });
+
     res.status(200).json({ success: true, message: "Password reset link sent" });
   } catch (error) {
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
-    await user.save();
     return next(new ErrorHandler(500, "Email could not be sent"));
   }
 });
 
-// Reset Password
+
+
 const resetPassword = TryCatch(async (req, res, next) => {
-  const resetToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
-  const user = await User.findOne({ resetPasswordToken: resetToken, resetPasswordExpire: { $gt: Date.now() } });
+  const { email, oldPassword, newPassword } = req.body;
 
-  if (!user) return next(new ErrorHandler(400, "Invalid or expired reset token"));
+  if (!email || !oldPassword || !newPassword) {
+    return next(new ErrorHandler(400, "All fields are required"));
+  }
 
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
+  const user = await User.findOne({ email }).select("+password");
+  if (!user) return next(new ErrorHandler(404, "User not found"));
 
-  res.status(200).json({ success: true, message: "Password reset successfully" });
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!isMatch) return next(new ErrorHandler(400, "Old password is incorrect"));
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    await User.updateOne({ email }, { password: hashedPassword });
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    return next(new ErrorHandler(500, error.message || "Internal Server Error"));
+  }
 });
+
+
 
 export {
   registerUser,

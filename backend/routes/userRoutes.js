@@ -18,6 +18,6 @@ router.get("/me", protect, getMe);
 router.put("/update", protect, updateUser);
 router.delete("/delete", protect, deleteUser);
 router.post("/forgot-password", forgotPassword);
-router.post("/reset-password/:token", resetPassword);
+router.post("/reset-password", resetPassword);
 
 export default router;
