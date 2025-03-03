@@ -61,6 +61,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import kycRoutes from "./routes/kycRoutes.js";
 import favoriteRoutes from "./routes/favoriteRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 // API Routes
 app.use("/api/v1/user", userRoutes);
@@ -69,6 +70,7 @@ app.use("/api/v1/notifications", notificationRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/kyc", kycRoutes);
 app.use("/api/v1/favorites", favoriteRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // Handle 404 Errors
 app.all("*", (req, res) => {

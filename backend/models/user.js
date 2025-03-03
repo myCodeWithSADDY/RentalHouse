@@ -63,4 +63,4 @@ userSchema.methods.getJWT = function () {
     expiresIn: "7d",
   });
 }
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);

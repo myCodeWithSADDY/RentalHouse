@@ -8,6 +8,11 @@ const ListingSchema = new mongoose.Schema(
     location: { type: String, required: true },
     images: [{ type: String }], // Array of image URLs
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User model
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"], 
+      default: "pending"
+    },
   },
   { timestamps: true }
 );
